@@ -29,6 +29,8 @@ jobs:
           mkdir docs
           python dist.py
           git init
+          git config user.name "xhd0728"
+          git config user.email "hdxin2002@gmail.com"
           git remote add origin https://github.com/HEUOpenResource/heu-icicles.git
           mkdocs gh-deploy --force
         env:
