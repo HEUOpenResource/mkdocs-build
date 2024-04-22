@@ -25,6 +25,7 @@ jobs:
 
       - name: Build and deploy
         run: |
+          cd ./mkdocs_builder
           mkdir docs
           python dist.py
           git init
