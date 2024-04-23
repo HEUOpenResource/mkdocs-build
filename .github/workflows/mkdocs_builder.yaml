@@ -33,7 +33,6 @@ jobs:
       - name: Build and deploy
         run: |
           cd ./mkdocs_builder
-          mkdir docs
           python dist.py
           git init
           git config --local user.name "xhd0728"

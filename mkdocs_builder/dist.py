@@ -14,25 +14,6 @@ api_url = f"{prefix}/{owner}/{repo}/git/trees/main?recursive=1"
 headers = {"Authorization": f"token {token}"}
 
 
-def get_rate_limit_status(headers):
-    """获取并打印GitHub API调用次数限制的状态，使用北京时间显示限额重置时间"""
-    limit_url = "https://api.github.com/rate_limit"
-    try:
-        response = requests.get(limit_url, headers=headers)
-        response.raise_for_status()  # 如果请求失败，会抛出异常
-        limits = response.json()
-        print("调用限额：", limits["rate"]["limit"])
-        print("剩余调用次数：", limits["rate"]["remaining"])
-        reset_timestamp = response.headers["X-RateLimit-Reset"]
-        reset_time_utc = datetime.datetime.utcfromtimestamp(
-            int(reset_timestamp)
-        )
-        reset_time_bj = reset_time_utc + datetime.timedelta(hours=8)
-        print("限额将于北京时间", reset_time_bj, "重置")
-    except requests.exceptions.RequestException as e:
-        print("无法获取限制状态信息:", e)
-
-
 def get_repo_tree(api_url, headers):
     """获取并返回GitHub仓库的文件和目录结构"""
     try:
@@ -98,6 +79,10 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
         path = current_path + "/" + \
             item["path"] if current_path else item["path"]
 
+        filename = path.split("/")[-1]
+        if filename == '1':
+            continue
+
         if item["type"] == "tree":
             markdown_content = (
                 f"{'#' * (path.count('/') + 1)} {path}\n\n" + markdown_content
@@ -106,17 +91,15 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
                 stack.extend((child, path) for child in reversed(item["tree"]))
             continue
 
-        filename = path.split("/")[-1]
-        # size_in_mb = item["size"] / (1024 * 1024)
         download_link_github = create_download_link_github(path)
         download_link_gitee = create_download_link_gitee(path)
         download_link_ghproxy = create_download_link_ghproxy(path)
         download_link_kokomi0728 = create_download_link_kokomi0728(path)
 
         badge_1 = f"[{filename}]({download_link_github})"
-        badge_2 = f"[Gitee]({download_link_gitee})"
-        badge_3 = f"[ghproxy]({download_link_ghproxy})"
-        badge_4 = f"[cloudflare]({download_link_kokomi0728})"
+        badge_2 = f"[\[Gitee镜像\]]({download_link_gitee})"
+        badge_3 = f"[\[其他镜像1\]]({download_link_ghproxy})"
+        badge_4 = f"[\[其他镜像2\]]({download_link_kokomi0728})"
 
         file_size = format_file_size(item["size"])
         display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}"
@@ -136,16 +119,17 @@ def update_index_file():
     temp_file_path = "temp/README.md"
     index_file_path = "docs/index.md"
 
-    # 创建 temp 文件夹（如果不存在）
     if not os.path.exists("temp"):
         os.makedirs("temp")
+
+    if not os.path.exists("docs"):
+        os.makedirs("docs")
 
     # 下载 README.md 文件到 temp 文件夹
     download_file(url, temp_file_path)
 
     # 将 temp 文件夹中的 README.md 文件覆盖到 docs 文件夹中的 index.md 文件
     os.replace(temp_file_path, index_file_path)
-    print("仓库根目录下的README.md文件已经成功覆盖到 docs 文件夹中的 index.md 文件")
 
 
 def download_and_add_readme(folder_path, output_folder):

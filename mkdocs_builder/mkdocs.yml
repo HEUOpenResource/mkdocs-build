@@ -8,8 +8,6 @@ repo_url: https://github.com/HEUOpenResource/heu-icicles
 
 theme:
   name: material
-  logo: assets/favicon.jpg
-  favicon: assets/favicon.jpg
   language: zh # 一些提示性的文字会变成中文
   palette: 
     - scheme: default

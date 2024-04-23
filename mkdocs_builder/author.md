@@ -2,7 +2,7 @@
 
 ###### 文件下载
 
-本站绝大部分文件存储在[GitHub仓库](https://github.com/HEUOpenResource/heu-icicles)中，可能会有网络问题而无法下载，推荐使用[Watt Toolkit](https://steampp.net/)下载,具体使用方法可自行搜索。(2024年4月18日11:24:41 新增在线预览功能和两个代理下载链接)
+本站绝大部分文件存储在[GitHub仓库](https://github.com/HEUOpenResource/heu-icicles)中，可能会有网络问题而无法下载，推荐使用文件后的镜像网站下载。
 
 ###### 版权声明
 
@@ -21,23 +21,3 @@
 <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span>
 
 <script src="https://code.tidio.co/cxznnwqpscdvdmtboln0dgrtgrmixd5j.js" async></script>
-
-<style>
-    body {
-        font-family: 'Arial', sans-serif; /* 默认使用备用字体 */
-    }
-</style>
-
-<script>
-    // 创建一个新的 <link> 元素
-    var fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://heuopenresource.github.io/heu-icicles/stylesheets/LXGWZhenKai.css'; // 字体文件的 CSS 样式表路径
-    // 在加载完成时执行回调
-    fontLink.onload = function() {
-        console.log('Font loaded successfully.');
-        document.body.style.fontFamily = 'LXGWZhenKai, Arial, sans-serif'; // 加载成功后切换到自定义字体
-    };
-    // 将 <link> 元素插入到 <head> 中
-    document.head.appendChild(fontLink);
-</script>
