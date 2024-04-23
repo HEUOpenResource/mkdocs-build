@@ -37,7 +37,5 @@ jobs:
           export remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/HEUOpenResource/heu-icicles.git"
           git remote add origin "${remote_repo}"
           mkdocs gh-deploy --force
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
         env:
           TOKEN: ${{ secrets.TOKEN }}
