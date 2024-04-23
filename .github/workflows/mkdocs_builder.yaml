@@ -26,9 +26,9 @@ jobs:
           two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
           curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
           if jq -e '. | length > 0' commits.json >/dev/null; then
-            echo "has_commits='yes'" >> $GITHUB_STATE
+            echo "::set-output name=has_commits::'yes'"
           else
-            echo "has_commits='no'" >> $GITHUB_STATE
+            echo "::set-output name=has_commits::'no'"
           fi
 
   build:
