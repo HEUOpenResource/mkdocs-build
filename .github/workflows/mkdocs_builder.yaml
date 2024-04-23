@@ -21,10 +21,16 @@ jobs:
       - name: Check if there are new commits in the last 2 hours
         id: check-commits
         run: |
+          sudo apt-get install jq -y
           current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
-          commits=$(curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time")
-          echo "::set-output name=has_commits::$(if [ -n \"$commits\" ]; then echo true; else echo false; fi)"
+          curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
+          if jq -e '. | length > 0' commits.json >/dev/null; then
+            has_commits=true
+          else
+            has_commits=false
+          fi
+          echo "::set-output name=has_commits::$(if [[ $has_commits ]]; then echo true; else echo false; fi)"
 
   build:
     runs-on: ubuntu-latest
