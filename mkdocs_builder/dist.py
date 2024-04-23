@@ -97,9 +97,9 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
         download_link_kokomi0728 = create_download_link_kokomi0728(path)
 
         badge_1 = f"[{filename}]({download_link_github})"
-        badge_2 = f"[\[Gitee镜像\]]({download_link_gitee})"
-        badge_3 = f"[\[其他镜像1\]]({download_link_ghproxy})"
-        badge_4 = f"[\[其他镜像2\]]({download_link_kokomi0728})"
+        badge_2 = f"[[Gitee镜像]]({download_link_gitee})"
+        badge_3 = f"[[其他镜像1]]({download_link_ghproxy})"
+        badge_4 = f"[[其他镜像2]]({download_link_kokomi0728})"
 
         file_size = format_file_size(item["size"])
         display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}"
