@@ -13,23 +13,6 @@ permissions:
   id-token: write
 
 jobs:
-  check-commit:
-    runs-on: ubuntu-latest
-    outputs:
-      has_commits: ${{ steps.check-commits.outputs.has_commits }}
-    steps:
-      - name: Check if there are new commits in the last 2 hours
-        id: check-commits
-        run: |
-          sudo apt-get install jq -y
-          current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
-          curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
-          if jq -e '. | length > 0' commits.json >/dev/null; then
-            echo "::set-output name=has_commits::'yes'"
-          else
-            echo "::set-output name=has_commits::'no'"
-          fi
 
   build:
     runs-on: ubuntu-latest
