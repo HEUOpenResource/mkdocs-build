@@ -36,9 +36,9 @@ jobs:
           mkdir docs
           python dist.py
           git init
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          export remote_repo="https://github-actions[bot]:${{ secrets.DEPENDABOT_TOKEN }}@github.com/HEUOpenResource/heu-icicles.git"
+          git config --local user.name "xhd0728"
+          git config --local user.email "hdxin2002@gmail.com"
+          export remote_repo="https://xhd0728:${{ secrets.TOKEN }}@github.com/HEUOpenResource/heu-icicles.git"
           git remote add origin "${remote_repo}"
           mkdocs gh-deploy --force
         env:
