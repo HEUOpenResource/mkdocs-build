@@ -26,17 +26,15 @@ jobs:
           two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
           curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
           if jq -e '. | length > 0' commits.json >/dev/null; then
-            echo "true"
-            echo "::set-output name=has_commits::true"
+            echo "has_commits='yes'" >> $GITHUB_STATE
           else
-            echo "false"
-            echo "::set-output name=has_commits::false"
+            echo "has_commits='no'" >> $GITHUB_STATE
           fi
 
   build:
     runs-on: ubuntu-latest
     needs: check-commit
-    if: ${{ needs.check-commit.outputs.has_commits == true }}
+    if: ${{ needs.check-commit.outputs.has_commits == 'yes' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
