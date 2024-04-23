@@ -2,18 +2,16 @@ site_name: HEUOpenResource
 site_description: HEUOpenResource
 site_author: only9464
 site_url: https://heuopenresource.github.io/heu-icicles/
-dev_addr: '127.0.0.1:10010' #默认值
+dev_addr: '127.0.0.1:4000' #默认值
 copyright: Copyright @ 2024 only9464, All rights reserved.
 repo_url: https://github.com/HEUOpenResource/heu-icicles
 
 theme:
   name: material
-  logo: assets/favicon.png
-  favicon: assets/favicon.png
+  logo: assets/favicon.jpg
+  favicon: assets/favicon.jpg
   language: zh # 一些提示性的文字会变成中文
   palette: 
-    # - primary: blue  #顶部颜色
-    # Palette toggle for light mode
     - scheme: default
       toggle:
         icon: material/brightness-7 
@@ -25,14 +23,11 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features: 
-    # - announce.dismiss #呈现可标记为由用户读取的临时公告，可以包含一个用于取消当前公告的按钮
     - navigation.top   # 返回顶部的按钮 在上滑时出现
     - search.suggest   # 搜索输入一些字母时推荐补全整个单词
     - search.highlight   # 搜索出的文章关键词加入高亮
     - navigation.indexes   #启用节索引页后，可以将文档直接附加到节
     - search.share   #搜索分享按钮
-
-
 
 extra:
   generator: false  #删除页脚显示“使用 MkDocs 材料制造”
@@ -47,18 +42,8 @@ extra:
     - icon: fontawesome/solid/paper-plane
       link: https://t.me/+l17qIX7cFRNmNjg1 
 
-
-extra_css:
-  # - stylesheets/LXGWZhenKai.css # 自定义CSS
-#   - https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css  #字体
-  - https://heuopenresource.github.io/heu-icicles/stylesheets/LXGWZhenKai.css
-
 extra_javascript:
-  # - 'https://heuopenresource.github.io/heu-icicles/stylesheets/busuanzi.pure.mini.js'
-  # - 'stylesheets/busuanzi.pure.mini.js'
   - '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
-
-
 
 nav:
   - 首页: index.md

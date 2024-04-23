@@ -8,38 +8,39 @@ from pypinyin import pinyin
 
 owner = "HEUOpenResource"
 repo = "heu-icicles"
+prefix = 'https://api.github.com/repos'
 token = os.environ["TOKEN"]
-api_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
+api_url = f"{prefix}/{owner}/{repo}/git/trees/main?recursive=1"
 headers = {"Authorization": f"token {token}"}
 
 
 def get_rate_limit_status(headers):
     """获取并打印GitHub API调用次数限制的状态，使用北京时间显示限额重置时间"""
     limit_url = "https://api.github.com/rate_limit"
-    response = requests.get(limit_url, headers=headers)
-    if response.status_code == 200:
+    try:
+        response = requests.get(limit_url, headers=headers)
+        response.raise_for_status()  # 如果请求失败，会抛出异常
         limits = response.json()
         print("调用限额：", limits["rate"]["limit"])
         print("剩余调用次数：", limits["rate"]["remaining"])
         reset_timestamp = response.headers["X-RateLimit-Reset"]
-        reset_time_utc = datetime.datetime.utcfromtimestamp(int(reset_timestamp))
+        reset_time_utc = datetime.datetime.utcfromtimestamp(
+            int(reset_timestamp)
+        )
         reset_time_bj = reset_time_utc + datetime.timedelta(hours=8)
         print("限额将于北京时间", reset_time_bj, "重置")
-    else:
-        print("无法获取限制状态信息。")
+    except requests.exceptions.RequestException as e:
+        print("无法获取限制状态信息:", e)
 
 
 def get_repo_tree(api_url, headers):
     """获取并返回GitHub仓库的文件和目录结构"""
-    print("\n调用前状态：")
-    get_rate_limit_status(headers)
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        print("\n调用后状态：")
-        get_rate_limit_status(headers)
-        return response.json()["tree"]
-    else:
-        print(f"错误：{response.status_code}")
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        return response.json().get("tree", [])
+    except requests.exceptions.RequestException as e:
+        print(f"请求失败：{e}")
         return []
 
 
@@ -54,8 +55,12 @@ def print_tree_to_file(tree, filename):
 
 
 def save_tree_to_file(tree, filename="tree.json"):
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(tree, f, indent=4, ensure_ascii=False)  # ensure_ascii 设置为 False
+    """将文件和目录结构保存到JSON文件中"""
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(tree, f, indent=4, ensure_ascii=False)
+    except IOError as e:
+        print(f"无法保存文件：{e}")
 
 
 def create_download_link_github(path):
@@ -74,13 +79,24 @@ def create_download_link_kokomi0728(path):
     return f"https://ghproxy.kokomi0728.eu.org/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
 
 
+def format_file_size(file_size_bytes):
+    """格式化文件大小"""
+    units = ['B', 'KB', 'MB', 'GB', 'TB']
+    unit_index = 0
+    while file_size_bytes >= 1024 and unit_index < len(units) - 1:
+        file_size_bytes /= 1024
+        unit_index += 1
+    return "{:.2f} {}".format(file_size_bytes, units[unit_index])
+
+
 def generate_markdown_for_subject(subject_name, subject_tree_data):
     markdown_content = ""
     stack = [(item, "") for item in subject_tree_data]
     while stack:
         item, current_path = stack.pop()
 
-        path = current_path + "/" + item["path"] if current_path else item["path"]
+        path = current_path + "/" + \
+            item["path"] if current_path else item["path"]
 
         if item["type"] == "tree":
             markdown_content = (
@@ -91,15 +107,20 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
             continue
 
         filename = path.split("/")[-1]
-        size_in_mb = item["size"] / (1024 * 1024)  # Convert bytes to MB
+        # size_in_mb = item["size"] / (1024 * 1024)
         download_link_github = create_download_link_github(path)
         download_link_gitee = create_download_link_gitee(path)
         download_link_ghproxy = create_download_link_ghproxy(path)
         download_link_kokomi0728 = create_download_link_kokomi0728(path)
-        markdown_content = (
-            f"- [{filename}]({download_link_github}) ({size_in_mb:.8f} MB) [在线预览]({download_link_gitee}) [备用链接1]({download_link_ghproxy}) [备用链接2]({download_link_kokomi0728}) \n"
-            + markdown_content
-        )
+
+        badge_1 = f"[{filename}]({download_link_github})"
+        badge_2 = f"[Gitee]({download_link_gitee})"
+        badge_3 = f"[ghproxy]({download_link_ghproxy})"
+        badge_4 = f"[cloudflare]({download_link_kokomi0728})"
+
+        file_size = format_file_size(item["size"])
+        display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}"
+        markdown_content = (f"- {display_item}\n" + markdown_content)
 
     return markdown_content
 
@@ -155,7 +176,7 @@ def download_and_add_readme(folder_path, output_folder):
             else:
                 print(f"Failed to download: {link}")
         else:
-            ##print(f"Skipped downloading: {link} as it doesn't start with 'https://raw.githubusercontent.com'")
+            # print(f"Skipped downloading: {link} as it doesn't start with 'https://raw.githubusercontent.com'")
             pass
             return None
 
@@ -180,7 +201,8 @@ def download_and_add_readme(folder_path, output_folder):
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.writelines(updated_content)
 
-                download_links = re.findall(r"\[.*?\]\((.*?)\)", "".join(content))
+                download_links = re.findall(
+                    r"\[.*?\]\((.*?)\)", "".join(content))
                 # 遍历找到的下载链接
                 for link in download_links:
                     if "README.md" in link:
@@ -206,7 +228,8 @@ def categorize_and_generate_markdown(tree_data, store_path):
 
     for subject, subject_tree_data in subject_to_files.items():
         output_file_name = os.path.join(store_path, f"{subject}.md")
-        markdown_content = generate_markdown_for_subject(subject, subject_tree_data)
+        markdown_content = generate_markdown_for_subject(
+            subject, subject_tree_data)
 
         with open(output_file_name, "w", encoding="utf-8") as file:
             file.write(markdown_content)
@@ -272,7 +295,7 @@ def update_mkdocs_nav(docs_folder, file_path):
         return
 
     # 删除nav段的内容(保留前两行)
-    lines[nav_start + 2 : nav_end] = []
+    lines[nav_start + 2: nav_end] = []
 
     # 写入新的nav段，挨个添加md文档，格式：- 文档名称: 文档名称.md
     for file in docs_files:
@@ -325,16 +348,17 @@ def add_author_information(author_file_path="author.md"):
                     md_file.write(new_content)
 
 
-tree = get_repo_tree(api_url, headers)
+if __name__ == '__main__':
 
-if tree:
-    print_tree_to_file(tree, "context.txt")
-    save_tree_to_file(tree)
-    # 删除非 index.md 的所有 .md 文件
-    delete_non_index_md_files()
-    update_index_file()
-    create_md_files()
-    download_and_add_readme("docs", "temp")
-    beautify_md_files("docs")
-    update_mkdocs_nav("docs", "mkdocs.yml")
-    add_author_information()
+    tree = get_repo_tree(api_url, headers)
+
+    if tree:
+        # print_tree_to_file(tree, "context.txt")
+        save_tree_to_file(tree)
+        # delete_non_index_md_files()
+        update_index_file()
+        create_md_files()
+        download_and_add_readme("docs", "temp")
+        beautify_md_files("docs")
+        update_mkdocs_nav("docs", "mkdocs.yml")
+        add_author_information()
