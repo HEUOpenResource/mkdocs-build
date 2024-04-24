@@ -5,7 +5,7 @@ current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
 
 # 从环境变量读取token
-token = $1
+token=$1
 
 # 使用 GitHub API 获取过去两小时内的提交信息
 curl -s -H "Authorization: token $token" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
