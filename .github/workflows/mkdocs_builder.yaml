@@ -32,8 +32,8 @@ jobs:
 
       - name: Check for repository updates and deploy
         run: |
-          # cd ./mkdocs_builder
-          chmod +x update_and_deploy.sh  # 给脚本添加执行权限
+          cd ./mkdocs_builder
+          chmod +x update_and_deploy.sh
           ./update_and_deploy.sh
 
         env:
