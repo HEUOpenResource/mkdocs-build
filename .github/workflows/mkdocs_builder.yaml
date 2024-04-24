@@ -34,7 +34,7 @@ jobs:
         run: |
           cd ./mkdocs_builder
           chmod +x update_and_deploy.sh
-          ./update_and_deploy.sh
+          bash ./update_and_deploy.sh ${{ secrets.TOKEN }}
 
         env:
           TOKEN: ${{ secrets.TOKEN }}
