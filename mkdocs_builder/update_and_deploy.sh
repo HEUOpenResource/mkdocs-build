@@ -1,19 +1,14 @@
 #!/bin/bash
 
-# 获取当前时间
-CURRENT_TIME=$(date +%s)
+# 获取当前时间和两小时前的时间
+current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+two_hours_ago=$(date -u -d '2 hours ago' +"%Y-%m-%dT%H:%M:%SZ")
 
-# 获取上次更新时间
-LAST_UPDATE=$(git log -n 1 --format=%ct)
+# 使用 GitHub API 获取过去两小时内的提交信息
+curl -s -H "Authorization: token ${{ secrets.TOKEN }}" "https://api.github.com/repos/HEUOpenResource/heu-icicles/commits?since=$two_hours_ago&until=$current_time" > commits.json
 
-# 计算时间差（秒）
-TIME_DIFF=$((CURRENT_TIME - LAST_UPDATE))
-
-# 定义更新间隔（两小时）
-UPDATE_INTERVAL=$((2 * 60 * 60))
-
-# 如果两小时内有更新，则执行操作
-if [ $TIME_DIFF -lt $UPDATE_INTERVAL ]; then
+# 判断是否有提交
+if jq -e '. | length > 0' commits.json >/dev/null; then
     echo "Repository has been updated within the last two hours."
 
     # 执行指定的操作
