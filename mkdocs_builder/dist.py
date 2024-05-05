@@ -204,7 +204,7 @@ def categorize_and_generate_markdown(tree_data, store_path):
 
     for item in tree_data:
         subject = item["path"].split("/")[0]
-        if subject.lower() not in {"license", "readme.md"}:
+        if subject.lower() not in {"license", "readme.md",".github"}:
             subject_to_files[subject].append(item)
 
     if not os.path.exists(store_path):
