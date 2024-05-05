@@ -60,6 +60,10 @@ def create_download_link_kokomi0728(path):
     return f"https://ghproxy.kokomi0728.eu.org/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
 
 
+def create_download_link_mioe(path):
+    return f"https://ghproxy.mioe.me/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
+
+
 def format_file_size(file_size_bytes):
     """格式化文件大小"""
     units = ['B', 'KB', 'MB', 'GB', 'TB']
@@ -95,14 +99,16 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
         download_link_gitee = create_download_link_gitee(path)
         download_link_ghproxy = create_download_link_ghproxy(path)
         download_link_kokomi0728 = create_download_link_kokomi0728(path)
+        download_link_mioe = create_download_link_mioe(path)
 
         badge_1 = f"[{filename}]({download_link_github})"
         badge_2 = f"[[Gitee镜像]]({download_link_gitee})"
         badge_3 = f"[[其他镜像1]]({download_link_ghproxy})"
         badge_4 = f"[[其他镜像2]]({download_link_kokomi0728})"
+        badge_5 = f"[[其他镜像3]]({download_link_mioe})"
 
         file_size = format_file_size(item["size"])
-        display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}"
+        display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}\t{badge_5}"
         markdown_content = (f"- {display_item}\n" + markdown_content)
 
     return markdown_content
