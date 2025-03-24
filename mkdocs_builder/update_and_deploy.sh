@@ -16,6 +16,8 @@ if jq -e '. | length > 0' commits.json >/dev/null; then
 
     # 执行指定的操作
     python dist.py
+    # 添加 CNAME 文件
+    echo "heu.us.kg" > CNAME
     git init
     git config --local user.name "xhd0728"
     git config --local user.email "hdxin2002@gmail.com"
