@@ -12,7 +12,7 @@ prefix = 'https://api.github.com/repos'
 token = os.environ["TOKEN"]
 api_url = f"{prefix}/{owner}/{repo}/git/trees/main?recursive=1"
 headers = {"Authorization": f"token {token}"}
-
+domain = "heu.us.kg"  # 自定义域名（为空字符串时，不生成CNAME文件）
 
 def get_repo_tree(api_url, headers):
     """获取并返回GitHub仓库的文件和目录结构"""
@@ -331,6 +331,27 @@ def add_author_information(author_file_path="author.md"):
                 with open(file_path, "w", encoding="utf-8") as md_file:
                     md_file.write(new_content)
 
+def create_cname_file():
+    """在docs目录创建CNAME文件（仅当domain非空时）"""
+    # 检查domain是否为空
+    if not domain.strip():
+        print("检测到domain为空，跳过CNAME文件生成")
+        return
+    
+    docs_dir = "docs"
+    cname_path = os.path.join(docs_dir, "CNAME")
+    
+    try:
+        # 确保docs目录存在（静默创建）
+        os.makedirs(docs_dir, exist_ok=True)
+        
+        # 写入域名内容
+        with open(cname_path, "w", encoding="utf-8") as f:
+            f.write(domain)
+        print(f"已创建CNAME文件: {cname_path}（自定义域名：{domain}）")
+        
+    except Exception as e:
+        print(f"创建CNAME文件失败: {str(e)}")
 
 if __name__ == '__main__':
 
@@ -346,3 +367,4 @@ if __name__ == '__main__':
         beautify_md_files("docs")
         update_mkdocs_nav("docs", "mkdocs.yml")
         add_author_information()
+        create_cname_file()
