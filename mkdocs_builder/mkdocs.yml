@@ -1,7 +1,7 @@
 site_name: HEUOpenResource
 site_description: HEUOpenResource
 site_author: only9464
-site_url: https://heuopenresource.github.io/heu-icicles/
+site_url: http://heu.us.kg
 dev_addr: '127.0.0.1:4000' #默认值
 copyright: Copyright @ 2024 only9464, All rights reserved.
 repo_url: https://github.com/HEUOpenResource/heu-icicles
@@ -31,7 +31,9 @@ extra:
   generator: false  #删除页脚显示“使用 MkDocs 材料制造”
   analytics: 
     provider: google
-    property: G-SMFXWPCRMG # Google Analytics ID
+    property: G-0K3DDDQNDN # Google Analytics ID
+    # G-SMFXWPCRMG ==> https://heuopenresource.github.io/heu-icicles/
+    # G-0K3DDDQNDN ==> heu.us.kg
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/HEUOpenResource/heu-icicles
