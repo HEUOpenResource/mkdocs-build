@@ -26,4 +26,5 @@
 <span id="busuanzi_container_page_pv">本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
 <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人次</span>
 
-<script src="https://code.tidio.co/cxznnwqpscdvdmtboln0dgrtgrmixd5j.js" async></script>
+<script defer src="https://analytics.heu.us.kg/tracker.min.js" data-website-id="哈尔滨工程大学课程攻略共享计划"></script>
+<!-- <script src="https://code.tidio.co/cxznnwqpscdvdmtboln0dgrtgrmixd5j.js" async></script> -->
