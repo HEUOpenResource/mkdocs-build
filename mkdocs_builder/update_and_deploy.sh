@@ -17,9 +17,9 @@ if jq -e '. | length > 0' commits.json >/dev/null; then
     # 执行指定的操作
     python dist.py
     git init
-    git config --local user.name "xhd0728"
-    git config --local user.email "hdxin2002@gmail.com"
-    export remote_repo="https://xhd0728:$token@github.com/HEUOpenResource/heu-icicles.git"
+    git config --local user.name "only9464"
+    git config --local user.email "sky9464@qq.com"
+    export remote_repo="https://only9464:$token@github.com/HEUOpenResource/heu-icicles.git"
     git remote add origin $remote_repo
     mkdocs gh-deploy --force
 else
