@@ -9,15 +9,13 @@ from pypinyin import pinyin
 owner = "HEUOpenResource"
 repo = "heu-icicles"
 prefix = 'https://api.github.com/repos'
-token = os.environ["TOKEN"]
 api_url = f"{prefix}/{owner}/{repo}/git/trees/main?recursive=1"
-headers = {"Authorization": f"token {token}"}
 domain = "heu.us.kg"  # 自定义域名（为空字符串时，不生成CNAME文件）
 
-def get_repo_tree(api_url, headers):
+def get_repo_tree(api_url):
     """获取并返回GitHub仓库的文件和目录结构"""
     try:
-        response = requests.get(api_url, headers=headers)
+        response = requests.get(api_url)
         response.raise_for_status()
         return response.json().get("tree", [])
     except requests.exceptions.RequestException as e:
@@ -56,8 +54,8 @@ def create_download_link_kokomi0728(path):
     return f"https://ghproxy.kokomi0728.eu.org/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
 
 
-def create_download_link_mioe(path):
-    return f"https://ghproxy.mioe.me/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
+def create_download_link_heu(path):
+    return f"https://ghproxy.heu.us.kg/https://raw.githubusercontent.com/HEUOpenResource/heu-icicles/main/{path}"
 
 
 def format_file_size(file_size_bytes):
@@ -94,12 +92,12 @@ def generate_markdown_for_subject(subject_name, subject_tree_data):
         download_link_github = create_download_link_github(path)
         download_link_ghproxy = create_download_link_ghproxy(path)
         download_link_kokomi0728 = create_download_link_kokomi0728(path)
-        download_link_mioe = create_download_link_mioe(path)
+        download_link_heu = create_download_link_heu(path)
 
         badge_1 = f"[{filename}]({download_link_github})"
         badge_2 = f"[[备份下载1]]({download_link_ghproxy})"
         badge_3 = f"[[备份下载2]]({download_link_kokomi0728})"
-        badge_4 = f"[[备份下载3]]({download_link_mioe})"
+        badge_4 = f"[[备份下载3]]({download_link_heu})"
 
         file_size = format_file_size(item["size"])
         display_item = f"{badge_1}\t{file_size}\t{badge_2}\t{badge_3}\t{badge_4}"
@@ -355,7 +353,7 @@ def create_cname_file():
 
 if __name__ == '__main__':
 
-    tree = get_repo_tree(api_url, headers)
+    tree = get_repo_tree(api_url)
 
     if tree:
         # print_tree_to_file(tree, "context.txt")

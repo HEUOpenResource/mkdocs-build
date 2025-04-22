@@ -1,40 +1,63 @@
-name: Build MKDocs
+name: Docs Auto Builder
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */2 * * *'
+  workflow_dispatch:  # 允许手动触发
+  schedule:  # 定时触发
+    - cron: '0 */2 * * *'  # 每两小时运行一次
 
 permissions:
-  pull-requests: write
-  contents: write
-  repository-projects: write
-  pages: write
-  id-token: write
+  contents: write  # 代码写入权限
+  pages: write     # Pages部署权限
 
 jobs:
-
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    environment: production  # 推荐关联生产环境
+    concurrency: 
+      group: "docs-deploy-${{ github.ref }}"  # 防止并发冲突
 
-      - name: 🌈 安装Python
-        uses: actions/setup-python@v2
+    steps:
+      - name: 🛠 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          path: 'src'  # 指定检出目录
+          persist-credentials: false  # 禁用默认凭证
+
+      - name: 🔑 Configure SSH Access
+        if: github.ref == 'refs/heads/main'  # 仅主分支需要部署
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: 🐍 Setup Python 3.12
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'  # 启用依赖缓存
 
-      - name: 🚁 安装Python依赖
+      - name: 📦 Install Dependencies
+        working-directory: ./src/mkdocs_builder
         run: |
-          cd ./mkdocs_builder
-          pip install -r ./requirements.txt
+          pip install --cache-dir .pip_cache -r requirements.txt
 
-      - name: ✅ 检查主仓库更新状况并部署
-        run: |
-          cd ./mkdocs_builder
-          chmod +x update_and_deploy.sh
-          bash ./update_and_deploy.sh ${{ secrets.TOKEN }}
-
+      - name: 🚀 Build Documentation
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GIT_AUTHOR_NAME: "only9464"
+          GIT_COMMITTER_EMAIL: "only9464@qq.com"
+        working-directory: ./src/mkdocs_builder
+        run: |
+          # 配置全局Git身份
+          git config --global user.name "$GIT_AUTHOR_NAME"
+          git config --global user.email "$GIT_COMMITTER_EMAIL"
+          
+          # 设置SSH认证
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no"
+          
+          # 执行部署脚本
+          chmod +x update_and_deploy.sh
+          ./update_and_deploy.sh
+
+          # 清理敏感信息
+          unset GIT_SSH_COMMAND
