@@ -20,17 +20,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: 🌈 安装Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: 🚁 安装Python依赖
         run: |
           cd ./mkdocs_builder
           pip install -r ./requirements.txt
 
-      - name: Check for repository updates and deploy
+      - name: ✅ 检查主仓库更新状况并部署
         run: |
           cd ./mkdocs_builder
           chmod +x update_and_deploy.sh
